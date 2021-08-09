@@ -19,8 +19,13 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 //read the db.json and return notes as JSON
-app.get("/api/notes", (req, res) => res.json(theDB));
-
+app.get("/api/notes", async (req, res) => {
+  // Read file:
+  const buffer = await readFromFile("./develop/db/db.json");
+  const data = JSON.parse(buffer);
+  // Return file
+  res.json(data);
+});
 //POST
 app.post("/api/notes", async (req, res) => {
   const { title, text } = req.body;
@@ -32,6 +37,7 @@ app.post("/api/notes", async (req, res) => {
   data.push({ title, text, note_id: uuidv4() });
   // Save file fs.
   await writeToFile("./develop/db/db.json", data);
+
   // Return file
   res.send("Success");
 });
